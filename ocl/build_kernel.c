@@ -3,6 +3,7 @@
 #include "miner.h"
 #include "build_kernel.h"
 #include "patch_kernel.h"
+#include "../algorithm/evocoin.h"
 
 static char *file_contents(const char *filename, int *length)
 {
@@ -130,7 +131,7 @@ static algorithm_get_settings_t algo[] = {
 };
 
 
-char *generateSource(const char *code)
+char *generateSource(const uint8_t *code)
 {
 
 	char *result; 
@@ -148,10 +149,10 @@ char *generateSource(const char *code)
 	// start from non-inverted signal
 	bool curState = false;
 	int i;
-	for (i = 0; i < strlen(code); i++) {
+	for (i = 0; i < HASH_FUNC_COUNT; i++) {
 
 		// extract index
-		char elem = code[i];
+		uint8_t elem = code[i];
 		uint8_t idx;
 		if (elem >= 'A')
 			idx = elem - 'A' + 10;

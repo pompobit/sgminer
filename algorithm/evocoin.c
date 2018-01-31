@@ -47,9 +47,7 @@
 #include "sph/sph_simd.h"
 #include "sph/sph_echo.h"
 
-#define INITIAL_DATE 1462060800
-#define HASH_FUNC_COUNT 11
-#define DEFAULT_NTIME "00000000"
+#include "evocoin.h"
 
 
 /* Move init out of loop, so init once externally, and then use one single memcpy with that bigger memory block */
@@ -159,6 +157,7 @@ void evocoin_twisted_code(char *result, const char *ntime, char *code)
 	uint32_t count = getCurrentAlgoSeq(h32, INITIAL_DATE);
 	getAlgoString(code, count);
 	sprintf(result, "_%d_%s_", count, code);
+
 }
 
 
@@ -168,11 +167,11 @@ static inline void xhash(void *state, const void *input , const char* ntime)
 
 	Xhash_context_holder ctx;
 
-	uint32_t hashA[16], hashB[16];
+	uint32_t hash[16];
 	memcpy(&ctx, &base_contexts, sizeof(base_contexts));
 	
 	char completeCode[64];
-	char resultCode[HASH_FUNC_COUNT + 1];
+	uint8_t resultCode[HASH_FUNC_COUNT + 1];
 	evocoin_twisted_code(completeCode, ntime, resultCode);
 
 	int i;
@@ -189,21 +188,14 @@ static inline void xhash(void *state, const void *input , const char* ntime)
 			idx = elem - '0';
 
 		int size;
-
-		if (i == 0) {
-			in = input;
-			size = 80;
-			out = hashA;
+		
+		if(i == 0) {
+			in=input;
+			size=80;
+			out = hash;
 		}
-		else {
-			if (out == hashA) {
-				in = hashA;
-				out = hashB;
-			}
-			else {
-				in = hashB;
-				out = hashA;
-			}
+		else { 
+			in = hash;
 			size = 64;
 		}
 
