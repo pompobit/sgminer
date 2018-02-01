@@ -121,34 +121,17 @@ int nextPerm(uint8_t n[], uint32_t count) {
 }
 
 
-void getAlgoString(char *str, uint32_t count)
-{
-	uint8_t algoList[HASH_FUNC_COUNT];
-	char s[100];
-	char *sptr;
-
+void getAlgoString(uint8_t *algoList, uint32_t count)
+{	
 	initPerm(algoList, HASH_FUNC_COUNT);
-
-	int j;
-
 	int k;
 	for (k = 0; k < count; k++) {
 		nextPerm(algoList, HASH_FUNC_COUNT);
 	}
-
-	sptr = str;
-	for (j = 0; j < HASH_FUNC_COUNT; j++) {
-		if (algoList[j] >= 10)
-			sprintf(sptr, "%c", 'A' + (algoList[j] - 10));
-		else
-			sprintf(sptr, "%u", algoList[j]);
-		sptr++;
-	}
-	*sptr = 0;
 }
 
 
-void evocoin_twisted_code(char *result, const char *ntime, char *code)
+void evocoin_twisted_code(char *result, const char *ntime, uint8_t *code)
 {
 	unsigned char bin[4];
 	uint32_t h32, *be32 = (uint32_t *)bin;
@@ -156,7 +139,19 @@ void evocoin_twisted_code(char *result, const char *ntime, char *code)
 	h32 = be32toh(*be32);
 	uint32_t count = getCurrentAlgoSeq(h32, INITIAL_DATE);
 	getAlgoString(code, count);
-	sprintf(result, "_%d_%s_", count, code);
+	char *sptr;
+	int j;
+	int n = sprintf(result, "_%d_", count);
+	sptr = result + n;
+	for (j = 0; j < HASH_FUNC_COUNT; j++) {
+		if (code[j] >= 10)
+			sprintf(sptr, "%c", 'A' + (code[j] - 10));
+		else
+			sprintf(sptr, "%u", code[j]);
+		sptr++;
+	}
+	strcat(sptr, "_"); sptr++;
+	*sptr = 0;
 
 }
 
@@ -179,13 +174,8 @@ static inline void xhash(void *state, const void *input , const char* ntime)
 	void *out;
 
 
-	for (i = 0; i < strlen(resultCode); i++) {
-		char elem = resultCode[i];
-		uint8_t idx;
-		if (elem >= 'A')
-			idx = elem - 'A' + 10;
-		else
-			idx = elem - '0';
+	for (i = 0; i < HASH_FUNC_COUNT; i++) {
+		uint8_t idx = resultCode[i];
 
 		int size;
 		

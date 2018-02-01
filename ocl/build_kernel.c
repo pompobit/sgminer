@@ -152,13 +152,7 @@ char *generateSource(const uint8_t *code)
 	for (i = 0; i < HASH_FUNC_COUNT; i++) {
 
 		// extract index
-		uint8_t elem = code[i];
-		uint8_t idx;
-		if (elem >= 'A')
-			idx = elem - 'A' + 10;
-		else
-			idx = elem - '0';
-
+		uint8_t idx = code[i];
 		// calc swap requirements
 		if (curState != algo[idx].req_inverted) {
 			
@@ -194,11 +188,11 @@ char *generateSource(const uint8_t *code)
 	return result;
 }
 
-cl_program build_opencl_kernel(build_kernel_data *data, const char *filename, const char *x11EvoCode)
+cl_program build_opencl_kernel(build_kernel_data *data, const char *filename, const uint8_t *x11EvoCode)
 {
   int pl;
   char *source;
-  if (strlen(x11EvoCode) > 0) {
+  if (x11EvoCode[0] != 255) {
 	  source = generateSource(x11EvoCode);
 	  pl = strlen(source) + 1;
   }

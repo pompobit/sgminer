@@ -727,8 +727,7 @@ _clState *initCl(unsigned int gpu, char *name, size_t nameSize, algorithm_t *alg
   if (clState->goffset)
     strcat(build_data->binary_filename, "g");
 
-  char x11EvoCode[12];
-  x11EvoCode[0] = 0;
+  uint8_t x11EvoCode[12] = { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255 };
 
   if (cgpu->algorithm.type == ALGO_X11EVO) {
 	  char algoSuffixCode[100];

@@ -9,6 +9,6 @@
 
 extern int evocoin_test(unsigned char *pdata, const unsigned char *ptarget,	uint32_t nonce);
 extern void evocoin_regenhash(struct work *work);
-extern void evocoin_twisted_code(char *result, const char *ntime, char *code);
+extern void evocoin_twisted_code(char *result, const char *ntime, uint8_t *code);
 
 #endif /* EVOCOIN_H */

@@ -6777,14 +6777,14 @@ static bool checkIfNeedSwitch(struct thr_info *mythr, struct work *work)
   if (work && work->pool) {
 
     char result[100];
-    char code[12];
+    uint8_t code[12];
 
     evocoin_twisted_code(result, work->pool->swork.ntime, code);
 
-    if (strcmp(code, mythr->curSequence) == 0) {
+    if (memcmp(code, mythr->curSequence, 12) == 0) {
       algoSwitch = false;
     } else {
-      strcpy(mythr->curSequence, code);
+      memcpy(mythr->curSequence, code, 12);
     }
   }
 
